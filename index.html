@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CTG Estimator</title>
+  <link rel="icon" href="https://comfotec.net/wp-content/uploads/2025/07/CTG-Calc-1.png" type="image/png">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-image: url('https://comfotec.net/wp-content/uploads/2025/07/CTG-Water-Mark-scaled.png');
+      background-size: cover;
+      background-position: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #095a9d;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      flex-direction: column;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 1300px;
+      width: 100%;
+    }
+    h2 {
+      text-align: center;
+      color: #095a9d;
+    }
+    .calculator-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .calc-block {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      flex: 1 1 300px;
+      min-width: 280px;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .calc-block h3 {
+      text-align: center;
+    }
+    .form-group {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    label, input {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    input {
+      padding: 10px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .output {
+      background: #eef;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      min-height: 50px;
+      font-size: 1rem;
+      text-align: center;
+      width: 100%;
+    }
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    .clear-btn, .small-clear-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #095a9d;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .small-clear-btn {
+      font-size: 0.8rem;
+      padding: 5px 10px;
+      margin-top: 10px;
+    }
+    .clear-btn:hover, .small-clear-btn:hover {
+      background-color: #07487c;
+    }
+
+    @media (max-width: 768px) {
+      html, body {
+        width: 100%;
+        overflow-x: hidden;
+      }
+      body {
+        padding: 10px;
+        flex-direction: column;
+      }
+      .container {
+        padding: 20px;
+      }
+      .calculator-grid {
+        flex-direction: column;
+        gap: 15px;
+      }
+      .calc-block {
+        max-width: 100%;
+      }
+      input {
+        font-size: 1rem;
+      }
+      .output {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>CTG Cost Estimator</h2>
+  <div class="calculator-grid">
+
+    <div class="calc-block">
+      <h3>Markup Calculator</h3>
+      <div class="form-group">
+        <div class="form-row">
+          <label for="associatePrice">Associate Price (AED)</label>
+          <input type="number" id="associatePrice" placeholder="e.g. 10000" oninput="calculateFromAssociate()">
+        </div>
+        <div class="form-row">
+          <label for="percentage">Markup Percentage (%)</label>
+          <input type="number" id="percentage" value="30" oninput="calculateFromAssociate()">
+        </div>
+        <div class="output" id="output1"></div>
+        <button class="small-clear-btn" onclick="clearMarkup()">Clear</button>
+      </div>
+    </div>
+
+    <div class="calc-block">
+      <h3>Profit & Margin Analyzer</h3>
+      <div class="form-group">
+        <div class="form-row">
+          <label for="givenAssociatePrice">Associate Price (AED)</label>
+          <input type="number" id="givenAssociatePrice" placeholder="e.g. 10000" oninput="calculateFromQuote()">
+        </div>
+        <div class="form-row">
+          <label for="givenCustomerPrice">CTG Price (AED)</label>
+          <input type="number" id="givenCustomerPrice" placeholder="e.g. 11000" oninput="calculateFromQuote()">
+        </div>
+        <div class="output" id="output2"></div>
+        <button class="small-clear-btn" onclick="clearAnalyzer()">Clear</button>
+      </div>
+    </div>
+
+    <div class="calc-block">
+      <h3>Target Margin</h3>
+      <div class="form-group">
+        <div class="form-row">
+          <label for="quoteTarget">CTG Price (AED)</label>
+          <input type="number" id="quoteTarget" placeholder="e.g. 11000" oninput="reverseFromProfit()">
+        </div>
+        <div class="form-row">
+          <label for="targetProfit">Margin (AED)</label>
+          <input type="number" id="targetProfit" placeholder="e.g. 1000" oninput="reverseFromProfit()">
+        </div>
+        <div class="output" id="output3"></div>
+        <button class="small-clear-btn" onclick="clearTarget()">Clear</button>
+      </div>
+    </div>
+
+    <div class="calc-block">
+      <h3>Target Percentage</h3>
+      <div class="form-group">
+        <div class="form-row">
+          <label for="ctgPrice">CTG Price (AED)</label>
+          <input type="number" id="ctgPrice" placeholder="e.g. 11000" oninput="calculateAssociateFromProfitPercentage()">
+        </div>
+        <div class="form-row">
+          <label for="profitPercent">Profit Percentage (%)</label>
+          <input type="number" id="profitPercent" placeholder="e.g. 10" oninput="calculateAssociateFromProfitPercentage()">
+        </div>
+        <div class="output" id="output4"></div>
+        <button class="small-clear-btn" onclick="clearAssociateFromProfitPercentage()">Clear</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script>
+function getMarginColor(percent) {
+  const red = Math.min(255, Math.round(255 * (1 - Math.min(percent, 30) / 30)));
+  const green = Math.min(180, Math.round(180 * (Math.min(percent, 30) / 30)));
+  return `rgb(${red}, ${green}, 0)`;
+}
+function calculateFromAssociate() {
+  const associate = parseFloat(document.getElementById('associatePrice').value);
+  const percentage = parseFloat(document.getElementById('percentage').value);
+  const out1 = document.getElementById('output1');
+  if (!associate || !percentage) {
+    out1.innerHTML = '';
+    return;
+  }
+  const ctgPrice = associate * (1 + percentage / 100);
+  const profit = ctgPrice - associate;
+  const marginColor1 = getMarginColor((profit / associate) * 100);
+  out1.innerHTML = `<div>CTG Price: AED ${ctgPrice.toFixed(2)}<br><span style='color: ${marginColor1};'>Margin: AED ${profit.toFixed(2)}</span></div>`;
+}
+function calculateFromQuote() {
+  const quote = parseFloat(document.getElementById('givenCustomerPrice').value);
+  const associate = parseFloat(document.getElementById('givenAssociatePrice').value);
+  const out2 = document.getElementById('output2');
+  if (!quote || !associate) {
+    out2.innerHTML = '';
+    return;
+  }
+  const profit = quote - associate;
+  const percentage = ((quote - associate) / associate) * 100;
+  const marginColor = getMarginColor(percentage);
+  out2.innerHTML = `<div>Percentage: ${percentage.toFixed(2)}%<br><span style='color: ${marginColor};'>Margin: AED ${profit.toFixed(2)}</span></div>`;
+}
+function reverseFromProfit() {
+  const quote = parseFloat(document.getElementById('quoteTarget').value);
+  const profit = parseFloat(document.getElementById('targetProfit').value);
+  const out3 = document.getElementById('output3');
+  if (!quote || !profit) {
+    out3.innerHTML = '';
+    return;
+  }
+  const associate = quote - profit;
+  const percentage = (profit / associate) * 100;
+  const marginColor3 = getMarginColor(percentage);
+  out3.innerHTML = `<div>Associate Price: AED ${associate.toFixed(2)}<br><span style='color: ${marginColor3};'>Margin: ${percentage.toFixed(2)}%</span></div>`;
+}
+function calculateAssociateFromProfitPercentage() {
+  const ctg = parseFloat(document.getElementById('ctgPrice').value);
+  const percent = parseFloat(document.getElementById('profitPercent').value);
+  const out4 = document.getElementById('output4');
+  if (!ctg || !percent) {
+    out4.innerHTML = '';
+    return;
+  }
+  const associate = ctg / (1 + percent / 100);
+  const margin = ctg - associate;
+  const marginColor = getMarginColor((margin / associate) * 100);
+  out4.innerHTML = `<div>Associate Price: AED ${associate.toFixed(2)}<br><span style='color: ${marginColor};'>Margin: AED ${margin.toFixed(2)}</span></div>`;
+}
+function clearMarkup() {
+  document.getElementById('associatePrice').value = '';
+  document.getElementById('percentage').value = '30';
+  document.getElementById('output1').innerHTML = '';
+}
+function clearAnalyzer() {
+  document.getElementById('givenAssociatePrice').value = '';
+  document.getElementById('givenCustomerPrice').value = '';
+  document.getElementById('output2').innerHTML = '';
+}
+function clearTarget() {
+  document.getElementById('quoteTarget').value = '';
+  document.getElementById('targetProfit').value = '';
+  document.getElementById('output3').innerHTML = '';
+}
+function clearAssociateFromProfitPercentage() {
+  document.getElementById('ctgPrice').value = '';
+  document.getElementById('profitPercent').value = '';
+  document.getElementById('output4').innerHTML = '';
+}
+</script>
+</body>
+</html>
