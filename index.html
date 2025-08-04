@@ -9,6 +9,7 @@
     body {
       margin: 0;
       padding: 0;
+      zoom: 90%;
       background-image: url('https://comfotec.net/wp-content/uploads/2025/07/CTG-Water-Mark-scaled.png');
       background-size: cover;
       background-position: center;
@@ -204,7 +205,12 @@
     </div>
 
   </div>
+
+  <div style="text-align:center; margin-top: 20px;">
+    <button class="clear-btn" onclick="clearAll()">Clear All</button>
+  </div>
 </div>
+
 <script>
 function getMarginColor(percent) {
   const red = Math.min(255, Math.round(255 * (1 - Math.min(percent, 30) / 30)));
@@ -282,6 +288,12 @@ function clearAssociateFromProfitPercentage() {
   document.getElementById('ctgPrice').value = '';
   document.getElementById('profitPercent').value = '';
   document.getElementById('output4').innerHTML = '';
+}
+function clearAll() {
+  clearMarkup();
+  clearAnalyzer();
+  clearTarget();
+  clearAssociateFromProfitPercentage();
 }
 </script>
 </body>
